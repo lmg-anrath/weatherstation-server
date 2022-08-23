@@ -40,6 +40,10 @@ app.post('/post', async (req, res) => {
 });
 
 app.get('/get', async (req, res) => {
+	var id = req.query.id;
+	if (!id) id = 1;
+	if (!logins[id]) return res.status(400).send('The specified stationId does not exist!');
+
 	const endDate = new Date();
 	var startDate = new Date(endDate.getDate() - 1);
 
@@ -53,6 +57,7 @@ app.get('/get', async (req, res) => {
 
 	const entries = await Log.findAll({
 		where: {
+			stationId: id,
 			createdAt: {
 				[Op.between]: [startDate.toISOString(), endDate.toISOString()],
 			},
