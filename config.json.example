@@ -1,0 +1,5 @@
+{
+	"url": "http://127.0.0.1:1111",
+	"port": 1111,
+    "database": "mysql://user:pass@host:3306/db"
+}
