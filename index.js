@@ -72,16 +72,9 @@ app.get('/get', async (req, res) => {
 
 	entries.forEach(entry => {
 		const date = new Date(entry.createdAt);
-		var dateStr =
-			('00' + (date.getMonth() + 1)).slice(-2) + '/' +
-			('00' + date.getDate()).slice(-2) + '/' +
-			date.getFullYear() + ' ' +
-			('00' + date.getHours()).slice(-2) + ':' +
-			('00' + date.getMinutes()).slice(-2) + ':' +
-			('00' + date.getSeconds()).slice(-2);
-		temperature.push({ x: dateStr, y: entry.temperature });
-		humidity.push({ x: dateStr, y: entry.humidity });
-		air_pressure.push({ x: dateStr, y: entry.air_pressure });
+		temperature.push({ x: date.toISOString(), y: entry.temperature });
+		humidity.push({ x: date.toISOString(), y: entry.humidity });
+		air_pressure.push({ x: date.toISOString(), y: entry.air_pressure });
 	});
 	res.send({
 		temperature: temperature,
