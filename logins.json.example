@@ -1,18 +1,18 @@
-{
-	"1": {
+[
+	{
 		"location": "Unknown",
 		"accessToken": "token"
 	},
-	"2": {
+	{
 		"location": "Unknown",
 		"accessToken": "token"
 	},
-	"3": {
+	{
 		"location": "Unknown",
 		"accessToken": "token"
 	},
-	"4": {
+	{
 		"location": "Unknown",
 		"accessToken": "token"
 	}
-}
+]

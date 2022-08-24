@@ -21,8 +21,8 @@ Log.sync();
 app.post('/post', async (req, res) => {
 	const { stationId, accessToken } = req.body;
 	if (!stationId || !accessToken) return res.status(400).send('You need to provide an stationId and accessToken!');
-	if (!logins[stationId]) return res.status(400).send('The specified stationId does not exist!');
-	if (logins[stationId].accessToken != accessToken) return res.status(400).send('The specified accessToken is invalid!');
+	if (!logins[stationId - 1]) return res.status(400).send('The specified stationId does not exist!');
+	if (logins[stationId - 1].accessToken != accessToken) return res.status(400).send('The specified accessToken is invalid!');
 
 	const { temperature, humidity, air_pressure } = req.body;
 	if (!temperature) return res.status(400).send('Please specify the temperature!');
@@ -42,7 +42,7 @@ app.post('/post', async (req, res) => {
 app.get('/get', async (req, res) => {
 	var id = req.query.id;
 	if (!id) id = 1;
-	if (!logins[id]) return res.status(400).send('The specified stationId does not exist!');
+	if (!logins[id - 1]) return res.status(400).send('The specified stationId does not exist!');
 
 	const endDate = new Date();
 	var startDate = new Date(endDate.getDate() - 1);
@@ -86,6 +86,12 @@ app.get('/get', async (req, res) => {
 		humidity: humidity,
 		air_pressure: air_pressure,
 	});
+});
+
+app.get('/stations', async (req, res) => {
+	const locations = [];
+	logins.forEach(station => locations.push(station.location));
+	res.send(locations);
 });
 
 app.listen(config.port, console.log(`Started server at ${config.url}!`));
