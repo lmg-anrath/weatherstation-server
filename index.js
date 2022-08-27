@@ -17,6 +17,8 @@ const Log = sequelize.define('logs', {
 	temperature: DataTypes.FLOAT,
 	humidity: DataTypes.FLOAT,
 	air_pressure: DataTypes.INTEGER,
+	air_particle_pm25: DataTypes.FLOAT,
+	air_particle_pm10: DataTypes.FLOAT,
 });
 Log.sync();
 
@@ -26,16 +28,20 @@ app.post('/post', async (req, res) => {
 	if (!logins[stationId - 1]) return res.status(400).send('The specified stationId does not exist!');
 	if (logins[stationId - 1].accessToken != accessToken) return res.status(400).send('The specified accessToken is invalid!');
 
-	const { temperature, humidity, air_pressure } = req.body;
+	const { temperature, humidity, air_pressure, air_particle_pm25, air_particle_pm10 } = req.body;
 	if (!temperature) return res.status(400).send('Please specify the temperature!');
 	if (!humidity) return res.status(400).send('Please specify the humidity!');
 	if (!air_pressure) return res.status(400).send('Please specify the air pressure!');
+	if (!air_particle_pm25) return res.status(400).send('Please specify the pm25 air particle!');
+	if (!air_particle_pm10) return res.status(400).send('Please specify the pm10 air particle!');
 
 	const entry = await Log.create({
 		stationId: stationId,
 		temperature: temperature,
 		humidity: humidity,
 		air_pressure: air_pressure,
+		air_particle_pm25: air_particle_pm25,
+		air_particle_pm10: air_particle_pm10,
 	});
 	console.log(`Added entry ${entry.id} to the database.`);
 	res.sendStatus(200);
@@ -69,17 +75,23 @@ app.get('/get', async (req, res) => {
 	const temperature = [];
 	const humidity = [];
 	const air_pressure = [];
+	const air_particle_pm25 = [];
+	const air_particle_pm10 = [];
 
 	entries.forEach(entry => {
 		const date = new Date(entry.createdAt);
 		temperature.push({ x: date.toISOString(), y: entry.temperature });
 		humidity.push({ x: date.toISOString(), y: entry.humidity });
 		air_pressure.push({ x: date.toISOString(), y: entry.air_pressure });
+		air_particle_pm25.push({ x: date.toISOString(), y: entry.air_particle_pm25 });
+		air_particle_pm10.push({ x: date.toISOString(), y: entry.air_particle_pm10 });
 	});
 	res.send({
 		temperature: temperature,
 		humidity: humidity,
 		air_pressure: air_pressure,
+		air_particle_pm25: air_particle_pm25,
+		air_particle_pm10: air_particle_pm10,
 	});
 });
 
