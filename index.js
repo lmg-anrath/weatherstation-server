@@ -28,12 +28,15 @@ app.post('/post', async (req, res) => {
 	if (!logins[stationId - 1]) return res.status(400).send('The specified stationId does not exist!');
 	if (logins[stationId - 1].accessToken != accessToken) return res.status(400).send('The specified accessToken is invalid!');
 
-	const { temperature, humidity, air_pressure, air_particle_pm25, air_particle_pm10 } = req.body;
+	const { temperature, humidity, air_pressure, air_particle_pm25, air_particle_pm10, timestamp } = req.body;
 	if (!temperature) return res.status(400).send('Please specify the temperature!');
 	if (!humidity) return res.status(400).send('Please specify the humidity!');
 	if (!air_pressure) return res.status(400).send('Please specify the air pressure!');
 	if (!air_particle_pm25) return res.status(400).send('Please specify the pm25 air particle!');
 	if (!air_particle_pm10) return res.status(400).send('Please specify the pm10 air particle!');
+
+	let date = new Date();
+	if (timestamp) date = new Date(timestamp);
 
 	const entry = await Log.create({
 		stationId: stationId,
@@ -42,6 +45,7 @@ app.post('/post', async (req, res) => {
 		air_pressure: air_pressure,
 		air_particle_pm25: air_particle_pm25,
 		air_particle_pm10: air_particle_pm10,
+		createdAt: date.toISOString(),
 	});
 	console.log(`Added entry ${entry.id} to the database.`);
 	res.sendStatus(200);
