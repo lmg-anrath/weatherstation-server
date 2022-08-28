@@ -36,7 +36,7 @@ app.post('/post', async (req, res) => {
 	if (!air_particle_pm10) return res.status(400).send('Please specify the pm10 air particle!');
 
 	let date = new Date();
-	if (timestamp) date = new Date(timestamp);
+	if (timestamp) date = new Date(timestamp * 1000);
 
 	const entry = await Log.create({
 		stationId: stationId,
