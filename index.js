@@ -57,13 +57,14 @@ app.get('/get', async (req, res) => {
 	if (!logins[id - 1]) return res.status(400).send('The specified stationId does not exist!');
 
 	const endDate = new Date();
-	var startDate = new Date(endDate.getDate() - 1);
+	var startDate = endDate;
+	startDate.setDate(endDate.getDate() - 1);
 
 	var display = req.query.d;
 	if (display && display != 'day') {
-		if (display == 'week') startDate = new Date(endDate.getDate() - 7);
-		else if (display == 'month') startDate = new Date(endDate.getMonth() - 1);
-		else if (display == 'year') startDate = new Date(endDate.getMonth() - 12);
+		if (display == 'week') startDate.setDate(endDate.getDate() - 7);
+		else if (display == 'month') startDate.setMonth(endDate.getMonth() - 1);
+		else if (display == 'year') startDate.setMonth(endDate.getMonth() - 12);
 		else return res.status(400).send('Please specify an valid display query!');
 	}
 
@@ -83,7 +84,8 @@ app.get('/get', async (req, res) => {
 	const air_particle_pm10 = [];
 
 	entries.forEach(entry => {
-		const date = new Date(entry.createdAt);
+		var date = new Date(entry.createdAt);
+		date = new Date(date.getHours() - 2);
 		temperature.push({ x: date.toISOString(), y: entry.temperature });
 		humidity.push({ x: date.toISOString(), y: entry.humidity });
 		air_pressure.push({ x: date.toISOString(), y: entry.air_pressure });
