@@ -57,14 +57,14 @@ app.get('/get', async (req, res) => {
 	if (!logins[id - 1]) return res.status(400).send('The specified stationId does not exist!');
 
 	const endDate = new Date();
-	var startDate = endDate;
-	startDate.setDate(endDate.getDate() - 1);
+	const startDate = new Date(endDate.getTime());
 
 	var display = req.query.d;
-	if (display && display != 'day') {
-		if (display == 'week') startDate.setDate(endDate.getDate() - 7);
-		else if (display == 'month') startDate.setMonth(endDate.getMonth() - 1);
-		else if (display == 'year') startDate.setMonth(endDate.getMonth() - 12);
+	if (display) {
+		if (display == 'day') startDate.setDate(startDate.getDate() - 1);
+		else if (display == 'week') startDate.setDate(startDate.getDate() - 7);
+		else if (display == 'month') startDate.setMonth(startDate.getMonth() - 1);
+		else if (display == 'year') startDate.setMonth(startDate.getMonth() - 12);
 		else return res.status(400).send('Please specify an valid display query!');
 	}
 
@@ -84,8 +84,8 @@ app.get('/get', async (req, res) => {
 	const air_particle_pm10 = [];
 
 	entries.forEach(entry => {
-		var date = new Date(entry.createdAt);
-		date = new Date(date.getHours() - 2);
+		const date = new Date(entry.createdAt);
+		date.setHours(date.getHours() - 2);
 		temperature.push({ x: date.toISOString(), y: entry.temperature });
 		humidity.push({ x: date.toISOString(), y: entry.humidity });
 		air_pressure.push({ x: date.toISOString(), y: entry.air_pressure });
