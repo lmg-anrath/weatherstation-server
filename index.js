@@ -67,6 +67,7 @@ app.get('/get', async (req, res) => {
 		else if (display == 'year') startDate.setMonth(startDate.getMonth() - 12);
 		else return res.status(400).send('Please specify an valid display query!');
 	}
+	else startDate.setDate(startDate.getDate() - 1);
 
 	const entries = await Log.findAll({
 		where: {
