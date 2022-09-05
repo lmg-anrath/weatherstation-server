@@ -86,7 +86,7 @@ app.get('/get', async (req, res) => {
 
 	entries.forEach(entry => {
 		const date = new Date(entry.createdAt);
-		date.setHours(date.getHours() - 2);
+		date.setHours(date.getHours() + 2);
 		temperature.push({ x: date.toISOString(), y: entry.temperature });
 		humidity.push({ x: date.toISOString(), y: entry.humidity });
 		air_pressure.push({ x: date.toISOString(), y: entry.air_pressure });
