@@ -24,7 +24,7 @@ Log.sync();
 
 app.post('/post', async (req, res) => {
 	const { stationId, accessToken } = req.body;
-	if (!stationId || !accessToken) return res.status(400).send('You need to provide an stationId and accessToken!');
+	if (!stationId || !accessToken) return res.status(400).send('You need to provide a stationId and accessToken!');
 	if (!logins[stationId - 1]) return res.status(400).send('The specified stationId does not exist!');
 	if (logins[stationId - 1].accessToken != accessToken) return res.status(400).send('The specified accessToken is invalid!');
 
@@ -53,10 +53,11 @@ app.post('/post', async (req, res) => {
 
 app.get('/get', async (req, res) => {
 	var id = req.query.id;
-	if (!id) id = 1;
+	if (!id) return res.status(400).send('Please specify a stationId!');
 	if (!logins[id - 1]) return res.status(400).send('The specified stationId does not exist!');
 
-	const endDate = new Date();
+	const last = await Log.findOne({ order: [ [ 'createdAt', 'DESC' ] ] });
+	const endDate = new Date(last.createdAt);
 	const startDate = new Date(endDate.getTime());
 
 	var display = req.query.d;
@@ -65,7 +66,7 @@ app.get('/get', async (req, res) => {
 		else if (display == 'week') startDate.setDate(startDate.getDate() - 7);
 		else if (display == 'month') startDate.setMonth(startDate.getMonth() - 1);
 		else if (display == 'year') startDate.setMonth(startDate.getMonth() - 12);
-		else return res.status(400).send('Please specify an valid display query!');
+		else return res.status(400).send('Please specify a valid display query!');
 	}
 	else startDate.setDate(startDate.getDate() - 1);
 
@@ -108,4 +109,4 @@ app.get('/stations', async (req, res) => {
 	res.send(locations);
 });
 
-app.listen(config.port, console.log(`Started server at ${config.url}!`));
+app.listen(config.port, console.log(`Started server at http://127.0.0.1:${config.port} !`));
