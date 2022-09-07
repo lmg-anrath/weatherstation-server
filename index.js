@@ -60,7 +60,7 @@ app.get('/get', async (req, res) => {
 		where: { stationId: id },
 		order: [ [ 'createdAt', 'DESC' ] ],
 	});
-	const endDate = new Date(last.createdAt);
+	const endDate = last ? new Date(last.createdAt) : new Date();
 	const startDate = new Date(endDate.getTime());
 
 	var display = req.query.d;
