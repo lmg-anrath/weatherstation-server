@@ -56,7 +56,10 @@ app.get('/get', async (req, res) => {
 	if (!id) return res.status(400).send('Please specify a stationId!');
 	if (!logins[id - 1]) return res.status(400).send('The specified stationId does not exist!');
 
-	const last = await Log.findOne({ order: [ [ 'createdAt', 'DESC' ] ] });
+	const last = await Log.findOne({
+		where: { stationId: id },
+		order: [ [ 'createdAt', 'DESC' ] ],
+	});
 	const endDate = new Date(last.createdAt);
 	const startDate = new Date(endDate.getTime());
 
