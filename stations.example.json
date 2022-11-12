@@ -1,0 +1,10 @@
+[
+	{
+		"name": "NAME",
+		"accessToken": "TOKEN",
+		"position": {
+			"lat": 51.123,
+			"lon": 6.123
+		}
+	}
+]
