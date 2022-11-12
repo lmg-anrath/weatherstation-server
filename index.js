@@ -1,7 +1,7 @@
 const { Sequelize, DataTypes, Op } = require('sequelize');
 
 const config = require('./config.json');
-const logins = require('./logins.json');
+const stations = require('./stations.json');
 
 const express = require('express');
 const bodyParser = require('body-parser');
@@ -108,7 +108,7 @@ app.get('/get', async (req, res) => {
 
 app.get('/stations', async (req, res) => {
 	const locations = [];
-	logins.forEach(station => locations.push(station.location));
+	stations.forEach(station => locations.push({ name: station.name, position: station.position }));
 	res.send(locations);
 });
 
