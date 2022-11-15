@@ -108,7 +108,7 @@ app.get('/get', async (req, res) => {
 
 app.get('/stations', async (req, res) => {
 	const locations = [];
-	stations.forEach(station => locations.push({ name: station.name, position: station.position }));
+	stations.forEach(station => locations.push({ name: station.name, position: station.position, color: station.color }));
 	res.send(locations);
 });
 
