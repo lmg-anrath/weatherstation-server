@@ -74,8 +74,8 @@ app.get('/get', async (req, res) => {
 	else if (req.query.min && req.query.max) {
 		if (!(isIsoDate(req.query.min) && isIsoDate(req.query.max)))
 			return res.status(400).send('Please specify valid ISO dates!');
-		startDate = req.query.min;
-		endDate = req.query.max;
+		startDate = new Date(req.query.min);
+		endDate = new Date(req.query.max);
 		if (startDate.getTime() > endDate.getTime())
 			return res.status(400).send('The start date cannot be after the end date!');
 	}
