@@ -58,10 +58,10 @@ app.get('/get', async (req, res) => {
 
 	const last = await Log.findOne({
 		where: { stationId: id },
-		order: [ [ 'createdAt', 'DESC' ] ],
+		order: [['createdAt', 'DESC']],
 	});
-	const endDate = last ? new Date(last.createdAt) : new Date();
-	const startDate = new Date(endDate.getTime());
+	let endDate = last ? new Date(last.createdAt) : new Date();
+	let startDate = new Date(endDate.getTime());
 
 	var display = req.query.d;
 	if (display) {
@@ -70,6 +70,14 @@ app.get('/get', async (req, res) => {
 		else if (display == 'month') startDate.setMonth(startDate.getMonth() - 1);
 		else if (display == 'year') startDate.setMonth(startDate.getMonth() - 12);
 		else return res.status(400).send('Please specify a valid display query!');
+	}
+	else if (req.query.min && req.query.max) {
+		if (!(isIsoDate(req.query.min) && isIsoDate(req.query.max)))
+			return res.status(400).send('Please specify valid ISO dates!');
+		startDate = req.query.min;
+		endDate = req.query.max;
+		if (startDate.getTime() > endDate.getTime())
+			return res.status(400).send('The start date cannot be after the end date!');
 	}
 	else startDate.setDate(startDate.getDate() - 1);
 
@@ -105,6 +113,12 @@ app.get('/get', async (req, res) => {
 		air_particle_pm10: air_particle_pm10,
 	});
 });
+
+function isIsoDate(str) {
+	if (!/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z/.test(str)) return false;
+	const d = new Date(str);
+	return d instanceof Date && !isNaN(d) && d.toISOString() === str;
+}
 
 app.get('/stations', async (req, res) => {
 	const locations = [];
