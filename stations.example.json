@@ -3,6 +3,7 @@
 		"name": "NAME",
 		"accessToken": "TOKEN",
 		"color": "225,7,244",
+		"active": true,
 		"position": {
 			"lat": 51.123,
 			"lon": 6.123

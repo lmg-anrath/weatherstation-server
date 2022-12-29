@@ -118,7 +118,7 @@ function isIsoDate(str) {
 
 app.get('/stations', async (req, res) => {
 	const locations = [];
-	stations.forEach(station => locations.push({ name: station.name, position: station.position, color: station.color }));
+	stations.forEach(station => locations.push({ name: station.name, position: station.position, color: station.color, active: station.active }));
 	res.send(locations);
 });
 
