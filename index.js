@@ -30,24 +30,22 @@ app.post('/post', async (req, res) => {
 	if (stations[stationId - 1].accessToken != accessToken) return res.status(400).send('The specified accessToken is invalid!');
 
 	const { temperature, humidity, air_pressure, air_particle_pm25, air_particle_pm10, timestamp } = req.body;
-	if (!temperature) return res.status(400).send('Please specify the temperature!');
-	if (!humidity) return res.status(400).send('Please specify the humidity!');
-	if (!air_pressure) return res.status(400).send('Please specify the air pressure!');
-	if (!air_particle_pm25) return res.status(400).send('Please specify the pm25 air particle!');
-	if (!air_particle_pm10) return res.status(400).send('Please specify the pm10 air particle!');
 
 	let date = new Date();
 	if (timestamp) date = new Date(timestamp * 1000);
 
-	const entry = await Log.create({
+	const e = {
 		stationId: stationId,
-		temperature: temperature,
-		humidity: humidity,
-		air_pressure: air_pressure,
-		air_particle_pm25: air_particle_pm25,
-		air_particle_pm10: air_particle_pm10,
 		createdAt: date.toISOString(),
-	});
+	};
+
+	if (temperature != null) e.temperature = temperature;
+	if (humidity != null) e.humidity = humidity;
+	if (air_pressure != null) e.air_pressure = air_pressure;
+	if (air_particle_pm25 != null) e.air_particle_pm25 = air_particle_pm25;
+	if (air_particle_pm10 != null) e.air_particle_pm10 = air_particle_pm10;
+
+	const entry = await Log.create(e);
 	console.log(`Added entry ${entry.id} to the database.`);
 	res.sendStatus(200);
 });
@@ -95,11 +93,11 @@ app.get('/get', async (req, res) => {
 
 	entries.forEach(entry => {
 		const date = entry.createdAt;
-		temperature.push({ x: date.toISOString(), y: entry.temperature });
-		humidity.push({ x: date.toISOString(), y: entry.humidity });
-		air_pressure.push({ x: date.toISOString(), y: entry.air_pressure });
-		air_particle_pm25.push({ x: date.toISOString(), y: entry.air_particle_pm25 });
-		air_particle_pm10.push({ x: date.toISOString(), y: entry.air_particle_pm10 });
+		if (temperature != null) temperature.push({ x: date.toISOString(), y: entry.temperature });
+		if (humidity != null) humidity.push({ x: date.toISOString(), y: entry.humidity });
+		if (air_pressure != null) air_pressure.push({ x: date.toISOString(), y: entry.air_pressure });
+		if (air_particle_pm25 != null) air_particle_pm25.push({ x: date.toISOString(), y: entry.air_particle_pm25 });
+		if (air_particle_pm10 != null) air_particle_pm10.push({ x: date.toISOString(), y: entry.air_particle_pm10 });
 	});
 	res.send({
 		temperature: temperature,
