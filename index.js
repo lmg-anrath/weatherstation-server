@@ -10,6 +10,7 @@ const cors = require('cors');
 const app = express();
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
 
 const sequelize = new Sequelize(config.database, { logging: false });
 const Log = sequelize.define('logs', {
