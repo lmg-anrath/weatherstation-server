@@ -22,9 +22,9 @@ function isIsoDate(str) {
 	return d instanceof Date && !isNaN(d) && d.toISOString() === str;
 }
 app.get('/get', async (req, res) => {
-	var id = req.query.id;
+	var id = req.query.id - 1;
 	if (!id) return res.status(400).send('Please specify a stationId!');
-	if (!stations[id - 1]) return res.status(400).send('The specified stationId does not exist!');
+	if (!stations[id]) return res.status(400).send('The specified stationId does not exist!');
 
 	let endDate = new Date();
 	let startDate = new Date(endDate.getTime());
@@ -80,10 +80,11 @@ app.get('/get', async (req, res) => {
 });
 
 app.post('/post', async (req, res) => {
-	const { stationId, accessToken } = req.body;
+	const stationId = req.body.stationId - 1;
+	const { accessToken } = req.body;
 	if (!stationId || !accessToken) return res.status(400).send('You need to provide a stationId and accessToken!');
-	if (!stations[stationId - 1]) return res.status(400).send('The specified stationId does not exist!');
-	if (stations[stationId - 1].accessToken != accessToken) return res.status(400).send('The specified accessToken is invalid!');
+	if (!stations[stationId]) return res.status(400).send('The specified stationId does not exist!');
+	if (stations[stationId].accessToken != accessToken) return res.status(400).send('The specified accessToken is invalid!');
 
 	const { temperature, humidity, air_pressure, air_particle_pm25, air_particle_pm10, timestamp } = req.body;
 
