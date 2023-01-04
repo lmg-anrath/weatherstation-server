@@ -43,31 +43,14 @@ function isIsoDate(str) {
 	const d = new Date(str);
 	return d instanceof Date && !isNaN(d) && d.toISOString() === str;
 }
-app.get('/stations/:id/:timespan?', async (req, res) => {
-	var id = parseInt(req.params.id);
-	if (!stations[id]) return res.status(400).send('The specified stationId does not exist!');
-
-	const endDate = new Date();
-	const startDate = new Date(endDate.getTime());
-
-	var timespan = req.params.timespan || 'day';
-	if (timespan == 'day') startDate.setDate(startDate.getDate() - 1);
-	else if (timespan == 'week') startDate.setDate(startDate.getDate() - 7);
-	else if (timespan == 'month') startDate.setMonth(startDate.getMonth() - 1);
-	else if (timespan == 'year') startDate.setMonth(startDate.getMonth() - 12);
-	else return res.status(400).send('Please specify a valid display query!');
-
-	const channels = (req.query.channels || 'temperature,humidity,air_pressure,air_particle_pm25,air_particle_pm10').split(',');
-	res.send(await getData(id, startDate, endDate, channels));
-});
 app.get('/stations/:id', async (req, res) => {
 	var id = parseInt(req.params.id);
 	if (!stations[id]) return res.status(400).send('The specified stationId does not exist!');
 
-	if (!(isIsoDate(req.query.min) && isIsoDate(req.query.max)))
+	if (!(isIsoDate(req.query.start) && isIsoDate(req.query.end)))
 		return res.status(400).send('Please specify valid ISO dates!');
-	const startDate = new Date(req.query.min);
-	const endDate = new Date(req.query.max);
+	const startDate = new Date(req.query.start);
+	const endDate = new Date(req.query.end);
 	if (startDate.getTime() > endDate.getTime())
 		return res.status(400).send('The start date cannot be after the end date!');
 
@@ -86,7 +69,7 @@ function authorizedStation(req, res, next) {
 
 	next();
 }
-app.post('/stations/:id/', authorizedStation, async (req, res) => {
+app.post('/stations/:id', authorizedStation, async (req, res) => {
 	var id = parseInt(req.params.id);
 	const { temperature, humidity, air_pressure, air_particle_pm25, air_particle_pm10, timestamp } = req.body;
 
