@@ -51,7 +51,7 @@ app.get('/stations/:id', async (req, res) => {
 	if (!(startTimestamp && endTimestamp))
 		return res.status(400).send('Please specify valid start and end timestamps!');
 	const startDate = new Date(startTimestamp * 1000);
-	const endDate = new Date(startTimestamp * 1000);
+	const endDate = new Date(endTimestamp * 1000);
 	if (startDate.getTime() > endDate.getTime())
 		return res.status(400).send('The start date cannot be after the end date!');
 
