@@ -5,10 +5,17 @@
 		"version": "2.1.1",
 		"description": "This is the API for the Wetterstation project. It provides access to the data collected by the stations."
 	},
+	"tags": [
+		{
+			"name": "customers",
+			"description": "Everything about your Customers"
+		}
+	],
 	"paths": {
 		"/v2/stations": {
 			"get": {
 				"summary": "Returns a list of stations",
+				"tags": ["customers"],
 				"responses": {
 					"200": {
 						"description": "A JSON array of all stations",
