@@ -1,6 +1,10 @@
 const express = require('express');
 const app = express.Router();
 
+const swaggerUi = require('swagger-ui-express');
+app.use('/', swaggerUi.serve);
+app.get('/', swaggerUi.setup(require('./v2.json')));
+
 const { Op } = require('sequelize');
 const Log = require('./db.js');
 
@@ -38,19 +42,16 @@ async function getData(id, startDate, endDate, channels) {
 	});
 	return data;
 }
-function isIsoDate(str) {
-	if (!/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z/.test(str)) return false;
-	const d = new Date(str);
-	return d instanceof Date && !isNaN(d) && d.toISOString() === str;
-}
 app.get('/stations/:id', async (req, res) => {
 	var id = parseInt(req.params.id);
 	if (!stations[id]) return res.status(400).send('The specified stationId does not exist!');
 
-	if (!(isIsoDate(req.query.start) && isIsoDate(req.query.end)))
-		return res.status(400).send('Please specify valid ISO dates!');
-	const startDate = new Date(req.query.start);
-	const endDate = new Date(req.query.end);
+	const startTimestamp = parseInt(req.query.start);
+	const endTimestamp = parseInt(req.query.end);
+	if (!(startTimestamp && endTimestamp))
+		return res.status(400).send('Please specify valid start and end timestamps!');
+	const startDate = new Date(startTimestamp * 1000);
+	const endDate = new Date(startTimestamp * 1000);
 	if (startDate.getTime() > endDate.getTime())
 		return res.status(400).send('The start date cannot be after the end date!');
 

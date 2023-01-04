@@ -1,0 +1,251 @@
+{
+	"openapi": "3.0.3",
+	"info": {
+		"title": "Wetterstation API",
+		"version": "2.1.1",
+		"description": "This is the API for the Wetterstation project. It provides access to the data collected by the stations."
+	},
+	"paths": {
+		"/v2/stations": {
+			"get": {
+				"summary": "Returns a list of stations",
+				"responses": {
+					"200": {
+						"description": "A JSON array of all stations",
+						"schema": {
+							"type": "array",
+							"items": {
+								"type": "object",
+								"properties": {
+									"name": {
+										"type": "string"
+									},
+									"position": {
+										"type": "object",
+										"properties": {
+											"lat": {
+												"type": "number"
+											},
+											"lon": {
+												"type": "number"
+											}
+										}
+									},
+									"color": {
+										"type": "string"
+									},
+									"active": {
+										"type": "boolean"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/v2/stations/{id}": {
+			"get": {
+				"summary": "Returns the data of a station in a given time range",
+				"description": "Useful link for getting example unix timestamps: [https://www.unixtimestamp.com/](https://www.unixtimestamp.com/)",
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"required": true,
+						"type": "integer"
+					},
+					{
+						"name": "start",
+						"in": "query",
+						"required": true,
+						"type": "integer"
+					},
+					{
+						"name": "end",
+						"in": "query",
+						"required": true,
+						"type": "integer"
+					},
+					{
+						"name": "channels",
+						"in": "query",
+						"type": "string",
+						"default": "temperature,humidity,air_pressure,air_particle_pm25,air_particle_pm10",
+						"enum": [
+							"temperature",
+							"humidity",
+							"air_pressure",
+							"air_particle_pm25",
+							"air_particle_pm10"
+						]
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Successful response",
+						"schema": {
+							"type": "object",
+							"properties": {
+								"temperature": {
+									"type": "array",
+									"items": {
+										"type": "object",
+										"properties": {
+											"x": {
+												"type": "string",
+												"format": "date-time"
+											},
+											"y": {
+												"type": "number"
+											}
+										}
+									}
+								},
+								"humidity": {
+									"type": "array",
+									"items": {
+										"type": "object",
+										"properties": {
+											"x": {
+												"type": "string",
+												"format": "date-time"
+											},
+											"y": {
+												"type": "number"
+											}
+										}
+									}
+								},
+								"air_pressure": {
+									"type": "array",
+									"items": {
+										"type": "object",
+										"properties": {
+											"x": {
+												"type": "string",
+												"format": "date-time"
+											},
+											"y": {
+												"type": "number"
+											}
+										}
+									}
+								},
+								"air_particle_pm25": {
+									"type": "array",
+									"items": {
+										"type": "object",
+										"properties": {
+											"x": {
+												"type": "string",
+												"format": "date-time"
+											},
+											"y": {
+												"type": "number"
+											}
+										}
+									}
+								},
+								"air_particle_pm10": {
+									"type": "array",
+									"items": {
+										"type": "object",
+										"properties": {
+											"x": {
+												"type": "string",
+												"format": "date-time"
+											},
+											"y": {
+												"type": "number"
+											}
+										}
+									}
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Invalid request",
+						"schema": {
+							"type": "object",
+							"properties": {
+								"message": {
+									"type": "string"
+								}
+							}
+						}
+					}
+				}
+			},
+			"post": {
+				"summary": "Push sensor data to the database",
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"required": true,
+						"type": "integer"
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"temperature": {
+										"type": "number"
+									},
+									"humidity": {
+										"type": "number"
+									},
+									"air_pressure": {
+										"type": "number"
+									},
+									"air_particle_pm25": {
+										"type": "number"
+									},
+									"air_particle_pm10": {
+										"type": "number"
+									},
+									"timestamp": {
+										"type": "integer"
+									}
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Successful response"
+					},
+					"401": {
+						"description": "Unauthorized request",
+						"schema": {
+							"type": "object",
+							"properties": {
+								"message": {
+									"type": "string"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Invalid request",
+						"schema": {
+							"type": "object",
+							"properties": {
+								"message": {
+									"type": "string"
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
