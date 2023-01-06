@@ -7,15 +7,17 @@
 	},
 	"tags": [
 		{
-			"name": "customers",
-			"description": "Everything about your Customers"
+			"name": "stations",
+			"description": "Everything"
 		}
 	],
 	"paths": {
 		"/v2/stations": {
 			"get": {
 				"summary": "Returns a list of stations",
-				"tags": ["customers"],
+				"tags": [
+					"stations"
+				],
 				"responses": {
 					"200": {
 						"description": "A JSON array of all stations",
@@ -55,6 +57,9 @@
 			"get": {
 				"summary": "Returns the data of a station in a given time range",
 				"description": "Useful link for getting example unix timestamps: [https://www.unixtimestamp.com/](https://www.unixtimestamp.com/)",
+				"tags": [
+					"stations"
+				],
 				"parameters": [
 					{
 						"name": "id",
@@ -187,6 +192,9 @@
 			},
 			"post": {
 				"summary": "Push sensor data to the database",
+				"tags": [
+					"stations"
+				],
 				"parameters": [
 					{
 						"name": "id",
@@ -250,6 +258,87 @@
 								}
 							}
 						}
+					}
+				}
+			}
+		},
+		"/v2/multiselect": {
+			"get": {
+				"summary": "Returns log data for multiple stations within a specified time range.",
+				"tags": [
+					"stations"
+				],
+				"parameters": [
+					{
+						"name": "ids",
+						"in": "query",
+						"description": "Comma-separated list of station IDs.",
+						"required": true,
+						"type": "string"
+					},
+					{
+						"name": "start",
+						"in": "query",
+						"description": "Start timestamp for time range in UNIX format (in seconds).",
+						"required": true,
+						"type": "integer"
+					},
+					{
+						"name": "end",
+						"in": "query",
+						"description": "End timestamp for time range in UNIX format (in seconds).",
+						"required": true,
+						"type": "integer"
+					},
+					{
+						"name": "channels",
+						"in": "query",
+						"description": "Comma-separated list of channels to include in the response. Possible values are: temperature, humidity, air_pressure, air_particle_pm25, air_particle_pm10.",
+						"required": false,
+						"type": "string",
+						"default": "temperature,humidity,air_pressure,air_particle_pm25,air_particle_pm10"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Successful response.",
+						"schema": {
+							"type": "object",
+							"properties": {
+								"data": {
+									"type": "array",
+									"items": {
+										"type": "object",
+										"properties": {
+											"stationId": {
+												"type": "string"
+											},
+											"timestamp": {
+												"type": "integer"
+											},
+											"temperature": {
+												"type": "number"
+											},
+											"humidity": {
+												"type": "number"
+											},
+											"air_pressure": {
+												"type": "number"
+											},
+											"air_particle_pm25": {
+												"type": "number"
+											},
+											"air_particle_pm10": {
+												"type": "number"
+											}
+										}
+									}
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad request. One of the required query parameters is missing or invalid."
 					}
 				}
 			}

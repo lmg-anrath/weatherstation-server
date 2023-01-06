@@ -21,16 +21,7 @@ app.get('/stations', async (req, res) => {
 	res.send(locations);
 });
 
-async function getData(id, startDate, endDate, channels) {
-	const entries = await Log.findAll({
-		where: {
-			stationId: id,
-			createdAt: {
-				[Op.between]: [startDate.toISOString(), endDate.toISOString()],
-			},
-		},
-	});
-
+async function getData(entries, channels) {
 	const data = {};
 	channels.forEach(channel => data[channel] = []);
 	entries.forEach(entry => {
@@ -56,7 +47,42 @@ app.get('/stations/:id', async (req, res) => {
 		return res.status(400).send('The start date cannot be after the end date!');
 
 	const channels = (req.query.channels || 'temperature,humidity,air_pressure,air_particle_pm25,air_particle_pm10').split(',');
-	res.send(await getData(id, startDate, endDate, channels));
+	const entries = await Log.findAll({
+		where: {
+			stationId: id,
+			createdAt: {
+				[Op.between]: [startDate.toISOString(), endDate.toISOString()],
+			},
+		},
+	});
+	res.send(await getData(entries, channels));
+});
+app.get('/multiselect', async (req, res) => {
+	if (!req.query.ids) return res.status(400).send('Please specify station ids!');
+	const ids = req.query.ids.split(',');
+
+	const startTimestamp = parseInt(req.query.start);
+	const endTimestamp = parseInt(req.query.end);
+	if (!(startTimestamp && endTimestamp))
+		return res.status(400).send('Please specify valid start and end timestamps!');
+	const startDate = new Date(startTimestamp * 1000);
+	const endDate = new Date(endTimestamp * 1000);
+	if (startDate.getTime() > endDate.getTime())
+		return res.status(400).send('The start date cannot be after the end date!');
+
+	const channels = (req.query.channels || 'temperature,humidity,air_pressure,air_particle_pm25,air_particle_pm10').split(',');
+	const entries = await Log.findAll({
+		where: {
+			stationId: {
+				[Op.in]: ids,
+			},
+			createdAt: {
+				[Op.between]: [startDate.toISOString(), endDate.toISOString()],
+			},
+		},
+	});
+
+	res.send(await getData(entries, channels));
 });
 
 
