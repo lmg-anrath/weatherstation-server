@@ -22,15 +22,7 @@ app.get('/stations', async (req, res) => {
 });
 
 async function getData(entries, channels) {
-	const data = {};
-	channels.forEach(channel => data[channel] = []);
-	entries.forEach(entry => {
-		const date = entry.createdAt;
-		channels.forEach(channel => {
-			if (entry[channel] != null)
-				data[channel].push({ x: date.toISOString(), y: entry[channel] });
-		});
-	});
+	
 	return data;
 }
 app.get('/stations/:id', async (req, res) => {
@@ -55,7 +47,17 @@ app.get('/stations/:id', async (req, res) => {
 			},
 		},
 	});
-	res.send(await getData(entries, channels));
+
+	const data = {};
+	channels.forEach(channel => data[channel] = []);
+	entries.forEach(entry => {
+		const date = entry.createdAt;
+		channels.forEach(channel => {
+			if (entry[channel] != null)
+				data[channel].push({ x: date.toISOString(), y: entry[channel] });
+		});
+	});
+	res.send(data);
 });
 app.get('/multiselect', async (req, res) => {
 	if (!req.query.ids) return res.status(400).send('Please specify station ids!');
@@ -82,7 +84,18 @@ app.get('/multiselect', async (req, res) => {
 		},
 	});
 
-	res.send(await getData(entries, channels));
+	const data = [];
+	ids.forEach(id => data[id] = {});
+	channels.forEach(channel => ids.forEach(id => data[id][channel] = []));
+
+	entries.forEach(entry => {
+		const date = entry.createdAt;
+		channels.forEach(channel => {
+			if (entry[channel] != null)
+				data[entry.stationId][channel].push({ x: date.toISOString(), y: entry[channel] });
+		});
+	});
+	res.send(data);
 });
 
 
