@@ -293,7 +293,7 @@
 					{
 						"name": "step",
 						"in": "query",
-						"description": "Interval in seconds at which to aggregate data",
+						"description": "Interval at which to aggregate data",
 						"required": false,
 						"type": "integer"
 					},
