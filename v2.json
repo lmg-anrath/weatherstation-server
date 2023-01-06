@@ -304,33 +304,16 @@
 						"description": "Successful response.",
 						"schema": {
 							"type": "object",
-							"properties": {
-								"data": {
-									"type": "array",
-									"items": {
-										"type": "object",
-										"properties": {
-											"stationId": {
-												"type": "string"
-											},
-											"timestamp": {
-												"type": "integer"
-											},
-											"temperature": {
-												"type": "number"
-											},
-											"humidity": {
-												"type": "number"
-											},
-											"air_pressure": {
-												"type": "number"
-											},
-											"air_particle_pm25": {
-												"type": "number"
-											},
-											"air_particle_pm10": {
-												"type": "number"
-											}
+							"additionalProperties": {
+								"type": "array",
+								"items": {
+									"type": "object",
+									"properties": {
+										"x": {
+											"type": "string"
+										},
+										"y": {
+											"type": "number"
 										}
 									}
 								}
