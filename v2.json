@@ -2,13 +2,13 @@
 	"openapi": "3.0.3",
 	"info": {
 		"title": "Wetterstation API",
-		"version": "2.1.1",
+		"version": "2.1.3",
 		"description": "This is the API for the Wetterstation project. It provides access to the data collected by the stations."
 	},
 	"tags": [
 		{
 			"name": "stations",
-			"description": "Everything"
+			"description": "Endpoints for weather stations"
 		}
 	],
 	"paths": {
@@ -291,6 +291,13 @@
 						"type": "integer"
 					},
 					{
+						"name": "step",
+						"in": "query",
+						"description": "Interval in seconds at which to aggregate data",
+						"required": true,
+						"type": "integer"
+					},
+					{
 						"name": "channels",
 						"in": "query",
 						"description": "Comma-separated list of channels to include in the response (temperature, humidity, air_pressure, air_particle_pm25, air_particle_pm10)",
@@ -311,6 +318,9 @@
 											"type": "integer"
 										},
 										"end": {
+											"type": "integer"
+										},
+										"step": {
 											"type": "integer"
 										},
 										"stations": {

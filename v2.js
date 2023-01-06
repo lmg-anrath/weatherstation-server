@@ -24,6 +24,9 @@ app.get('/stations', async (req, res) => {
 app.get('/stations/aggregate', async (req, res) => {
 	if (!req.query.ids) return res.status(400).send('Please specify station ids!');
 	const ids = req.query.ids.split(',');
+	ids.forEach(id => {
+		if (!stations[id]) return res.status(400).send('One of the specified stationIds does not exist!');
+	});
 
 	const startTimestamp = parseInt(req.query.start);
 	const endTimestamp = parseInt(req.query.end);
@@ -35,6 +38,9 @@ app.get('/stations/aggregate', async (req, res) => {
 		return res.status(400).send('The start date cannot be after the end date!');
 
 	const channels = (req.query.channels || 'temperature,humidity,air_pressure,air_particle_pm25,air_particle_pm10').split(',');
+	const step = parseInt(req.query.step);
+	if (!step) return res.status(400).send('Please specify a valid step intervall!');
+
 	const entries = await Log.findAll({
 		where: {
 			stationId: {
@@ -50,6 +56,7 @@ app.get('/stations/aggregate', async (req, res) => {
 		meta: {
 			start: startDate.getTime() / 1000,
 			end: endDate.getTime() / 1000,
+			step: step,
 			stations: ids,
 			channels: channels,
 		},
@@ -58,9 +65,24 @@ app.get('/stations/aggregate', async (req, res) => {
 	ids.forEach(id => {
 		const data = [];
 		channels.forEach(channel => {
-			const channelData = entries
-				.filter(entry => entry.stationId === id && entry[channel] != null)
-				.map(entry => ({ time: entry.createdAt.getTime() / 1000, value: entry[channel] }));
+			const channelData = [];
+			let currentTimestamp = startTimestamp;
+			while (currentTimestamp <= endTimestamp) {
+				const currentDate = new Date(currentTimestamp * 1000);
+				const nextDate = new Date((currentTimestamp + step) * 1000);
+				const values = entries
+					.filter(entry => entry.stationId === id && entry[channel] != null)
+					.filter(entry => entry.createdAt.getTime() >= currentDate.getTime() && entry.createdAt.getTime() < nextDate.getTime())
+					.map(entry => entry[channel]);
+				if (values.length > 0) {
+					const avgValue = values.reduce((a, b) => a + b, 0) / values.length;
+					channelData.push({
+						time: currentDate.getTime() / 1000 + step / 2,
+						value: avgValue,
+					});
+				}
+				currentTimestamp += step;
+			}
 			data.push(channelData);
 		});
 		response.data.push(data);
