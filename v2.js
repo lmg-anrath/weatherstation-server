@@ -46,18 +46,26 @@ app.get('/stations/aggregate', async (req, res) => {
 		},
 	});
 
-	const data = [];
-	ids.forEach(id => data[id] = {});
-	channels.forEach(channel => ids.forEach(id => data[id][channel] = []));
-
-	entries.forEach(entry => {
-		const date = entry.createdAt;
+	const response = {
+		meta: {
+			start: startDate.getTime() / 1000,
+			end: endDate.getTime() / 1000,
+			stations: ids,
+			channels: channels,
+		},
+		data: [],
+	};
+	ids.forEach(id => {
+		const data = [];
 		channels.forEach(channel => {
-			if (entry[channel] != null)
-				data[entry.stationId][channel].push({ x: date.toISOString(), y: entry[channel] });
+			const channelData = entries
+				.filter(entry => entry.stationId === id && entry[channel] != null)
+				.map(entry => ({ time: entry.createdAt.getTime() / 1000, value: entry[channel] }));
+			data.push(channelData);
 		});
+		response.data.push(data);
 	});
-	res.send(data);
+	res.send(response);
 });
 app.get('/stations/:id', async (req, res) => {
 	var id = parseInt(req.params.id);
@@ -88,7 +96,7 @@ app.get('/stations/:id', async (req, res) => {
 		const date = entry.createdAt;
 		channels.forEach(channel => {
 			if (entry[channel] != null)
-				data[channel].push({ x: date.toISOString(), y: entry[channel] });
+				data[channel].push({ time: date.toISOString(), value: entry[channel] });
 		});
 	});
 	res.send(data);

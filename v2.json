@@ -164,11 +164,11 @@
 									"items": {
 										"type": "object",
 										"properties": {
-											"x": {
+											"time": {
 												"type": "string",
 												"format": "date-time"
 											},
-											"y": {
+											"value": {
 												"type": "number"
 											}
 										}
@@ -264,7 +264,7 @@
 		},
 		"/v2/stations/aggregate": {
 			"get": {
-				"summary": "Returns log data for multiple stations within a specified time range.",
+				"summary": "Aggregate data from multiple stations over a given time period",
 				"tags": [
 					"stations"
 				],
@@ -272,48 +272,78 @@
 					{
 						"name": "ids",
 						"in": "query",
-						"description": "Comma-separated list of station IDs.",
+						"description": "Comma-separated list of station ids",
 						"required": true,
 						"type": "string"
 					},
 					{
 						"name": "start",
 						"in": "query",
-						"description": "Start timestamp for time range in UNIX format (in seconds).",
+						"description": "Start timestamp for the time period in Unix time (seconds)",
 						"required": true,
 						"type": "integer"
 					},
 					{
 						"name": "end",
 						"in": "query",
-						"description": "End timestamp for time range in UNIX format (in seconds).",
+						"description": "End timestamp for the time period in Unix time (seconds)",
 						"required": true,
 						"type": "integer"
 					},
 					{
 						"name": "channels",
 						"in": "query",
-						"description": "Comma-separated list of channels to include in the response. Possible values are: temperature, humidity, air_pressure, air_particle_pm25, air_particle_pm10.",
+						"description": "Comma-separated list of channels to include in the response (temperature, humidity, air_pressure, air_particle_pm25, air_particle_pm10)",
 						"required": false,
-						"type": "string",
-						"default": "temperature,humidity,air_pressure,air_particle_pm25,air_particle_pm10"
+						"type": "string"
 					}
 				],
 				"responses": {
 					"200": {
-						"description": "Successful response.",
+						"description": "Success",
 						"schema": {
 							"type": "object",
-							"additionalProperties": {
-								"type": "array",
-								"items": {
+							"properties": {
+								"meta": {
 									"type": "object",
 									"properties": {
-										"x": {
-											"type": "string"
+										"start": {
+											"type": "integer"
 										},
-										"y": {
-											"type": "number"
+										"end": {
+											"type": "integer"
+										},
+										"stations": {
+											"type": "array",
+											"items": {
+												"type": "string"
+											}
+										},
+										"channels": {
+											"type": "array",
+											"items": {
+												"type": "string"
+											}
+										}
+									}
+								},
+								"data": {
+									"type": "array",
+									"items": {
+										"type": "array",
+										"items": {
+											"type": "array",
+											"items": {
+												"type": "object",
+												"properties": {
+													"time": {
+														"type": "integer"
+													},
+													"value": {
+														"type": "number"
+													}
+												}
+											}
 										}
 									}
 								}
@@ -321,7 +351,7 @@
 						}
 					},
 					"400": {
-						"description": "Bad request. One of the required query parameters is missing or invalid."
+						"description": "Error - Invalid request"
 					}
 				}
 			}
