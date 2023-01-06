@@ -39,7 +39,6 @@ app.get('/stations/aggregate', async (req, res) => {
 
 	const channels = (req.query.channels || 'temperature,humidity,air_pressure,air_particle_pm25,air_particle_pm10').split(',');
 	const step = parseInt(req.query.step);
-	if (!step) return res.status(400).send('Please specify a valid step intervall!');
 
 	const entries = await Log.findAll({
 		where: {
@@ -65,23 +64,40 @@ app.get('/stations/aggregate', async (req, res) => {
 	ids.forEach(id => {
 		const data = [];
 		channels.forEach(channel => {
-			const channelData = [];
-			let currentTimestamp = startTimestamp;
-			while (currentTimestamp <= endTimestamp) {
-				const currentDate = new Date(currentTimestamp * 1000);
-				const nextDate = new Date((currentTimestamp + step) * 1000);
-				const values = entries
-					.filter(entry => entry.stationId === id && entry[channel] != null)
-					.filter(entry => entry.createdAt.getTime() >= currentDate.getTime() && entry.createdAt.getTime() < nextDate.getTime())
-					.map(entry => entry[channel]);
-				if (values.length > 0) {
-					const avgValue = values.reduce((a, b) => a + b, 0) / values.length;
+			let channelData;
+			if (step) {
+				channelData = [];
+				let currentTimestamp = startTimestamp;
+				while (currentTimestamp <= endTimestamp) {
+					const currentEndTimestamp = currentTimestamp + step;
+					const currentEntries = entries.filter(
+						entry =>
+							entry.stationId === id &&
+							entry[channel] != null &&
+							entry.createdAt.getTime() >= currentTimestamp * 1000 &&
+							entry.createdAt.getTime() < currentEndTimestamp * 1000,
+					);
+					const values = currentEntries.map(entry => entry[channel]);
+					const avg = values.reduce((a, b) => a + b, 0) / values.length;
 					channelData.push({
-						time: currentDate.getTime() / 1000 + step / 2,
-						value: avgValue,
+						time: (currentTimestamp + currentEndTimestamp) / 2,
+						value: avg,
 					});
+					currentTimestamp = currentEndTimestamp;
 				}
-				currentTimestamp += step;
+			}
+			else {
+				channelData = entries
+					.filter(entry => entry.stationId === id && entry[channel] != null)
+					.map(entry => ({
+						time: entry.createdAt.getTime() / 1000,
+						value: entry[channel],
+					}));
+			}
+
+			if (channelData.length > 2000) {
+				const intervall = Math.ceil(channelData.length / 2000);
+				channelData = channelData.filter((_, i) => i % intervall === 0);
 			}
 			data.push(channelData);
 		});
