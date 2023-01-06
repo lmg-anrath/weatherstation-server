@@ -262,7 +262,7 @@
 				}
 			}
 		},
-		"/v2/multiselect": {
+		"/v2/stations/aggregate": {
 			"get": {
 				"summary": "Returns log data for multiple stations within a specified time range.",
 				"tags": [

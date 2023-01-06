@@ -59,7 +59,7 @@ app.get('/stations/:id', async (req, res) => {
 	});
 	res.send(data);
 });
-app.get('/multiselect', async (req, res) => {
+app.get('/stations/aggregate', async (req, res) => {
 	if (!req.query.ids) return res.status(400).send('Please specify station ids!');
 	const ids = req.query.ids.split(',');
 
