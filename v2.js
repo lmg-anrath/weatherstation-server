@@ -24,9 +24,7 @@ app.get('/stations', async (req, res) => {
 app.get('/stations/aggregate', async (req, res) => {
 	if (!req.query.ids) return res.status(400).send('Please specify station ids!');
 	const ids = req.query.ids.split(',');
-	ids.forEach(id => {
-		if (!stations[id]) return res.status(400).send('One of the specified stationIds does not exist!');
-	});
+	if (!ids.every(id => stations[id])) return res.status(400).send('One of the specified stationIds does not exist!');
 	ids.forEach((id, index) => ids[index] = parseInt(id));
 
 	const startTimestamp = parseInt(req.query.start);
@@ -41,7 +39,9 @@ app.get('/stations/aggregate', async (req, res) => {
 	const channels = (req.query.channels || 'temperature,humidity,air_pressure,air_particle_pm25,air_particle_pm10').split(',');
 	if (!channels.every(channel => ['temperature', 'humidity', 'air_pressure', 'air_particle_pm25', 'air_particle_pm10'].includes(channel)))
 		return res.status(400).send('One of the specified channels does not exist!');
-	let step = parseInt(req.query.step) || 1;
+	let step = parseInt(req.query.step);
+	if (!step) step = 2000 / (channels.length * ids.length);
+	console.log(step);
 
 	const entries = await Log.findAll({
 		where: {
@@ -71,22 +71,9 @@ app.get('/stations/aggregate', async (req, res) => {
 				.filter(entry => entry.stationId === id && entry[channel] != null)
 				.map(entry => ({ time: entry.createdAt.getTime() / 1000, value: entry[channel] }));
 			let averageData = [];
+			// TODO
+			averageData = channelData;
 
-			let left = 1;
-			let right = channelData.length;
-
-			while (left <= right) {
-				step = Math.floor((left + right) / 2);
-				averageData = [];
-				for (let i = 0; i < channelData.length; i += step) {
-					const currentStep = channelData.slice(i, i + step);
-					const avg = currentStep.reduce((a, b) => a + b.value, 0) / currentStep.length;
-					averageData.push({ time: currentStep[0].time, value: avg });
-				}
-				if (averageData.length <= 1000) break;
-				else if (averageData.length > 1000) right = step - 1;
-				else left = step + 1;
-			}
 			data.push(averageData);
 		});
 		response.data.push(data);
