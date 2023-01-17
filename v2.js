@@ -40,7 +40,7 @@ app.get('/stations/aggregate', async (req, res) => {
 	if (!channels.every(channel => ['temperature', 'humidity', 'air_pressure', 'air_particle_pm25', 'air_particle_pm10'].includes(channel)))
 		return res.status(400).send('One of the specified channels does not exist!');
 	let step = parseInt(req.query.step);
-	if (!step) step = 2000 / (channels.length * ids.length);
+
 	console.log(step);
 
 	const entries = await Log.findAll({
@@ -53,6 +53,13 @@ app.get('/stations/aggregate', async (req, res) => {
 			},
 		},
 	});
+
+	// Calculate the step size if it is not specified
+	if (!step) {
+		const timeDiff = endDate.getTime() - startDate.getTime();
+		const dataPoints = entries.length / ids.length / channels.length;
+		step = Math.ceil(dataPoints / timeDiff * 1000);
+	}
 
 	const response = {
 		meta: {
@@ -70,9 +77,15 @@ app.get('/stations/aggregate', async (req, res) => {
 			const channelData = entries
 				.filter(entry => entry.stationId === id && entry[channel] != null)
 				.map(entry => ({ time: entry.createdAt.getTime() / 1000, value: entry[channel] }));
-			let averageData = [];
-			// TODO
-			averageData = channelData;
+			const averageData = [];
+
+			for (let i = 0; i < channelData.length; i += step) {
+				const values = channelData.slice(i, i + step);
+				const average = values.reduce((a, b) => a + b.value, 0) / values.length;
+				averageData.push({ time: values[0].time, value: average });
+			}
+			if (averageData.length != 0 && averageData[averageData.length - 1].value !== channelData[channelData.length - 1].value)
+				averageData.push(channelData[channelData.length - 1]);
 
 			data.push(averageData);
 		});
