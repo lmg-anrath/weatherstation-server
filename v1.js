@@ -23,7 +23,7 @@ function isIsoDate(str) {
 }
 app.get('/get', async (req, res) => {
 	var id = req.query.id - 1;
-	if (!id) return res.status(400).send('Please specify a stationId!');
+	if (id == null) return res.status(400).send('Please specify a stationId!');
 	if (!stations[id]) return res.status(400).send('The specified stationId does not exist!');
 
 	let endDate = new Date();
