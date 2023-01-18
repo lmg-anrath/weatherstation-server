@@ -41,8 +41,6 @@ app.get('/stations/aggregate', async (req, res) => {
 		return res.status(400).send('One of the specified channels does not exist!');
 	let step = parseInt(req.query.step);
 
-	console.log(step);
-
 	const entries = await Log.findAll({
 		where: {
 			stationId: {
