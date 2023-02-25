@@ -11,4 +11,10 @@ const Log = sequelize.define('logs', {
 });
 Log.sync();
 
-module.exports = Log;
+const Error = sequelize.define('errors', {
+	stationId: DataTypes.INTEGER,
+	error: DataTypes.TEXT,
+});
+Error.sync();
+
+module.exports = { Log, Error };

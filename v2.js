@@ -6,7 +6,7 @@ app.use('/', swaggerUi.serve);
 app.get('/', swaggerUi.setup(require('./v2.json')));
 
 const { Op } = require('sequelize');
-const Log = require('./db.js');
+const { Log, Error } = require('./db.js');
 
 const stations = require('./stations.json');
 
@@ -157,6 +157,46 @@ app.post('/stations/:id', authorizedStation, async (req, res) => {
 
 	const entry = await Log.create(e);
 	console.log(`Added entry ${entry.id} to the database.`);
+	res.sendStatus(200);
+});
+app.post('/stations/:id/bulk', authorizedStation, async (req, res) => {
+	var id = parseInt(req.params.id);
+	const { entries } = req.body;
+	if (!Array.isArray(entries)) return res.status(400).send('Please specify an array of entries!');
+
+	entries.forEach(entry => {
+		if (!entry.timestamp) return res.status(400).send('Please specify a timestamp for each entry!');
+	});
+
+	entries.forEach(async entry => {
+		const { temperature, humidity, air_pressure, air_particle_pm25, air_particle_pm10, timestamp } = entry;
+		const date = new Date(timestamp * 1000);
+		const e = {
+			stationId: id,
+			createdAt: date.toISOString(),
+		};
+
+		if (temperature != null) e.temperature = temperature;
+		if (humidity != null) e.humidity = humidity;
+		if (air_pressure != null) e.air_pressure = air_pressure;
+		if (air_particle_pm25 != null) e.air_particle_pm25 = air_particle_pm25;
+		if (air_particle_pm10 != null) e.air_particle_pm10 = air_particle_pm10;
+
+		const log_entry = await Log.create(e);
+		console.log(`Added entry ${log_entry.id} to the database.`);
+	});
+	res.sendStatus(200);
+});
+app.post('/stations/:id/error', authorizedStation, async (req, res) => {
+	var id = parseInt(req.params.id);
+	const { error } = req.body;
+	if (!error) return res.status(400).send('Please specify an error message!');
+
+	const entry = await Error.create({
+		stationId: id,
+		error: error,
+	});
+	console.log(`Added error ${entry.id} to the database.`);
 	res.sendStatus(200);
 });
 

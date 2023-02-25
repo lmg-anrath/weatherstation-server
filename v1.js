@@ -6,7 +6,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 const { Op } = require('sequelize');
-const Log = require('./db.js');
+const { Log } = require('./db.js');
 
 const stations = require('./stations.json');
 
