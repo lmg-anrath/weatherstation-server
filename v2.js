@@ -190,7 +190,7 @@ app.post('/stations/:id/bulk', authorizedStation, async (req, res) => {
 app.post('/stations/:id/error', authorizedStation, async (req, res) => {
 	var id = parseInt(req.params.id);
 	const { error } = req.body;
-	if (!error) return res.status(400).send('Please specify an error message!');
+	if (error == null) return res.status(400).send('Please specify an error message!');
 
 	const entry = await Error.create({
 		stationId: id,
