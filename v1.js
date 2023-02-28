@@ -47,14 +47,14 @@ app.get('/get', async (req, res) => {
 	}
 	else startDate.setDate(startDate.getDate() - 1);
 
-	const entries = await Log.findAll({
+	const entries = await require('./filter.js').filter(await Log.findAll({
 		where: {
 			stationId: id,
 			createdAt: {
 				[Op.between]: [startDate.toISOString(), endDate.toISOString()],
 			},
 		},
-	});
+	}));
 
 	const temperature = [];
 	const humidity = [];

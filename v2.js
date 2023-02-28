@@ -41,7 +41,7 @@ app.get('/stations/aggregate', async (req, res) => {
 		return res.status(400).send('One of the specified channels does not exist!');
 	let step = parseInt(req.query.step);
 
-	const entries = await Log.findAll({
+	const entries = await require('./filter.js').filter(await Log.findAll({
 		where: {
 			stationId: {
 				[Op.in]: ids,
@@ -50,7 +50,7 @@ app.get('/stations/aggregate', async (req, res) => {
 				[Op.between]: [startDate.toISOString(), endDate.toISOString()],
 			},
 		},
-	});
+	}));
 
 	// Calculate the step size if it is not specified
 	if (!step) {
@@ -105,14 +105,14 @@ app.get('/stations/:id', async (req, res) => {
 		return res.status(400).send('The start date cannot be after the end date!');
 
 	const channels = (req.query.channels || 'temperature,humidity,air_pressure,air_particle_pm25,air_particle_pm10').split(',');
-	const entries = await Log.findAll({
+	const entries = await require('./filter.js').filter(await Log.findAll({
 		where: {
 			stationId: id,
 			createdAt: {
 				[Op.between]: [startDate.toISOString(), endDate.toISOString()],
 			},
 		},
-	});
+	}));
 
 	const data = {};
 	channels.forEach(channel => data[channel] = []);
