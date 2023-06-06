@@ -1,4 +1,6 @@
 # Wetterstation Server
+[README in english](./README.en.md)
+
 Der Source-Code des Wetterstation Servers.
 Dieser übernimmt die Speicherung der Wetter-Daten in einer SQL-Datenbank und die Datenabfragen per API, die für die Webseite erforderlich sind.
 
