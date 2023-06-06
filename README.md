@@ -20,9 +20,9 @@ npm install
 ```
 
 ## Einrichtung
-Damit der Wetterstations-Server funktionstüchtig agieren kann, muss die `config.example.json` kopiert oder unbenannt werden in `config.json`.
+Damit der Wetterstations-Server funktionstüchtig agieren kann, muss die `config.example.json` kopiert oder unbenannt werden in `config.json` und die Datei `stations.example.json` in die Datei `stations.json` umbenannt werden muss.
 
-Unter Linux lässt sich das im gleichen Verzeichnis mit `cp config.example.json config.json` realisieren.
+Unter Linux lässt sich das im gleichen Verzeichnis mit `cp config.example.json config.json` und `cp stations.example.json stations.json` realisieren.
 
 ### Datenbank
 Zur Verwendung des Wetterstations-Servers muss eine Datenbank-Verbindung eingerichtet werden.
@@ -55,3 +55,5 @@ Dazu muss der Befehl `node index.js` in dem entsprechenden Verzeichnis ausgefüh
 ## Verwendung
 Wenn der Server fertig gestartet ist, kann man die API Dokumentation unter http://localhost:1111/v2/ aufrufen.
 Achtung: Bei geändertem Port oder beim Aufruf von einer anderen Maschine die URL entsprechend abändern!
+
+Neue Stationen können in der [stations.json](./stations.example.json) Datei hinzugefügt werden.
