@@ -54,6 +54,7 @@ app.get('/get', async (req, res) => {
 				[Op.between]: [startDate.toISOString(), endDate.toISOString()],
 			},
 		},
+		order: [['createdAt', 'ASC']],
 	}));
 
 	const temperature = [];

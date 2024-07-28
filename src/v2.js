@@ -112,6 +112,7 @@ app.get('/stations/:id', async (req, res) => {
 				[Op.between]: [startDate.toISOString(), endDate.toISOString()],
 			},
 		},
+		order: [['createdAt', 'ASC']],
 	}));
 
 	const data = {};
