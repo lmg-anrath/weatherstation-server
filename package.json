@@ -2,7 +2,13 @@
   "name": "weatherstation-server",
   "version": "1.0.0",
   "description": "The server code of the weatherstation project.",
-  "main": "index.js",
+  "main": "./src/index.js",
+  "scripts": {
+    "prod": "node src/index.js",
+    "dev": "nodemon src/index.js",
+    "lint": "eslint .",
+    "lint:fix": "eslint --fix ."
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/lmg-anrath/weatherstation-server.git"
@@ -15,15 +21,16 @@
   },
   "homepage": "https://weatherstation.jh220.de",
   "dependencies": {
+    "@sequelize/postgres": "^7.0.0-alpha.41",
     "cors": "^2.8.5",
-    "express": "^4.18.1",
-    "mysql2": "^2.3.3",
-    "sequelize": "^6.21.4",
-    "swagger-jsdoc": "^6.2.7",
-    "swagger-ui-express": "^4.6.0"
+    "express": "^4.19.2",
+    "mysql2": "^3.11.0",
+    "sequelize": "^6.37.3",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1"
   },
   "devDependencies": {
-    "eslint": "^8.22.0",
-    "nodemon": "^2.0.19"
+    "eslint": "^9.8.0",
+    "nodemon": "^3.1.4"
   }
 }

@@ -1,6 +1,6 @@
 const { Sequelize, DataTypes } = require('sequelize');
 
-const sequelize = new Sequelize(require('./config.json').database, { logging: false });
+const sequelize = new Sequelize(require('../config.json').database, { logging: false });
 const Log = sequelize.define('logs', {
 	stationId: DataTypes.INTEGER,
 	temperature: DataTypes.FLOAT,

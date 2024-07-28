@@ -8,7 +8,7 @@ app.get('/', swaggerUi.setup(require('./v2.json')));
 const { Op } = require('sequelize');
 const { Log, Error } = require('./db.js');
 
-const stations = require('./stations.json');
+const stations = require('../stations.json');
 
 app.get('/stations', async (req, res) => {
 	const locations = [];

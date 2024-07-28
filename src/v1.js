@@ -8,7 +8,7 @@ app.use(bodyParser.json());
 const { Op } = require('sequelize');
 const { Log } = require('./db.js');
 
-const stations = require('./stations.json');
+const stations = require('../stations.json');
 
 app.get('/stations', async (req, res) => {
 	const locations = [];

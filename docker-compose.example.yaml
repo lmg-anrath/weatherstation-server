@@ -1,0 +1,38 @@
+services:
+  server:
+    build:
+      context: .
+    environment:
+      NODE_ENV: production
+    restart: unless-stopped
+    ports:
+      - 1111:1111
+    volumes:
+      - ./config.json:/usr/src/app/config.json:ro
+      - ./stations.json:/usr/src/app/stations.json:ro
+    depends_on:
+      - db
+  db:
+    image: postgres
+    restart: unless-stopped
+    user: postgres
+    environment:
+      - POSTGRES_DB=weatherstation
+      - POSTGRES_PASSWORD=password
+    volumes:
+      - ./db-data:/var/lib/postgresql/data
+    expose:
+      - 5432
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@example.com
+      PGADMIN_DEFAULT_PASSWORD: password
+      PGADMIN_LISTEN_PORT: 80
+    ports:
+      - 8080:80
+    volumes:
+      - ./pgadmin:/var/lib/pgadmin
+    depends_on:
+      - db
