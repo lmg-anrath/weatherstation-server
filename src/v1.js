@@ -64,7 +64,8 @@ app.get('/get', async (req, res) => {
 	const air_particle_pm10 = [];
 
 	entries.forEach(entry => {
-		const date = entry.createdAt;
+		var date = entry.createdAt;
+		date = date.setHours(date.getHours() + 2);
 		if (entry.temperature != null) temperature.push({ x: date.toISOString(), y: entry.temperature });
 		if (entry.humidity != null) humidity.push({ x: date.toISOString(), y: entry.humidity });
 		if (entry.air_pressure != null) air_pressure.push({ x: date.toISOString(), y: entry.air_pressure });
