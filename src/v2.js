@@ -118,8 +118,8 @@ app.get('/stations/:id', async (req, res) => {
 	const data = {};
 	channels.forEach(channel => data[channel] = []);
 	entries.forEach(entry => {
-		var date = entry.createdAt;
-		date = date.setHours(date.getHours() + 2);
+		const date = entry.createdAt;
+		date.setHours(date.getHours() + 2);
 		channels.forEach(channel => {
 			if (entry[channel] != null)
 				data[channel].push({ time: date.toISOString(), value: entry[channel] });
